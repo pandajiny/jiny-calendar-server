@@ -19,6 +19,6 @@ const server = new apollo_server_express_1.ApolloServer({
 });
 server.applyMiddleware({ app: app_1.default });
 app_1.default.listen(4000, () => {
-    console.log(`App is running at http://localhost${app_1.default.get("port")}${server.graphqlPath}`);
+    console.log(`App is running at http://localhost${app_1.default.get("port")}${server.graphqlPath}!`);
 });
 exports.default = server;
