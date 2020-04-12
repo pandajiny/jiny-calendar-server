@@ -14,7 +14,11 @@ const client = new MongoClient("mongodb://localhost:27017/jiny-calendar", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 });
+console.log("test");
+console.log("ho");
 client.connect((err) => {
+    if (err)
+        throw err;
     console.log(`mongodb connected at ${"mongodb://localhost:27017/jiny-calendar"}`);
 });
 exports.UserDB = client.db("user");
