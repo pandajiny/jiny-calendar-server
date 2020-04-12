@@ -7,8 +7,8 @@ export const resolvers = {
       const request = await dataSources.UserAPI.hello("test");
       return request;
     },
-    getAllSchedules: async () => {
-      return "hi";
+    getAllSchedules: async (_, { email }, { dataSources }) => {
+      return await dataSources.NoteAPI.getAllNotes({ email });
     },
   },
   Mutation: {

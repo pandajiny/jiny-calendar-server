@@ -17,8 +17,8 @@ exports.resolvers = {
             const request = yield dataSources.UserAPI.hello("test");
             return request;
         }),
-        getAllSchedules: () => __awaiter(void 0, void 0, void 0, function* () {
-            return "hi";
+        getAllSchedules: (_, { email }, { dataSources }) => __awaiter(void 0, void 0, void 0, function* () {
+            return yield dataSources.NoteAPI.getAllNotes({ email });
         }),
     },
     Mutation: {
