@@ -33,8 +33,20 @@ exports.resolvers = {
             return yield UserAPI.RequestSignup({ name, email, password });
         }),
         createSchedule: (_, { scheduleTime, content, user }, ___) => __awaiter(void 0, void 0, void 0, function* () {
-            return yield NoteAPI.createSchedule({ scheduleTime, user, content });
-            // return await dataSources.NoteAPI.createSchedule({ time, user, content });
+            return yield NoteAPI.createSchedule({
+                scheduleTime,
+                user,
+                content: { body: content.body, type: "SCHEDULE" },
+            });
+        }),
+        createDiary: (_, { user, content }, ___) => __awaiter(void 0, void 0, void 0, function* () {
+            return yield NoteAPI.createDiary({
+                user,
+                content: {
+                    body: content.body,
+                    type: "DIARY",
+                },
+            });
         }),
     },
 };

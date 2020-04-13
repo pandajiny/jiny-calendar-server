@@ -21,14 +21,8 @@ function CheckExist({ email }) {
                 .toArray()
                 .then((data) => {
                 if (data.length > 0) {
-                    if (app_2.NoteDB.collection(email)) {
-                        console.log(`${email} is Exist`);
-                        resolve(true);
-                    }
-                    else {
-                        console.log(`${email} is exist, but Personal Note storage is not`);
-                        resolve(false);
-                    }
+                    console.log(`${email} is Exist`);
+                    resolve(true);
                 }
                 else {
                     console.log(`${email} is not exist`);

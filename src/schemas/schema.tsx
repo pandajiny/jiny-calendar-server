@@ -1,7 +1,7 @@
 import { gql } from "apollo-server-express";
 
 import { userTypes } from "./user";
-import { scheduleTypes, todoTypes } from "./note";
+import { scheduleTypes, todoTypes, diaryTypes } from "./note";
 import { timeTypes } from "./time";
 
 const schema = gql`
@@ -17,6 +17,16 @@ const schema = gql`
       content: ScheduleContentInput
       user: RequestUserInput
     ): CreateScheduleResult
+    createDiary(
+      user: RequestUserInput
+      content: DiaryContentInput
+    ): CreateDiaryResult
+  }
+
+  enum ContentType {
+    SCHEDULE
+    DIARY
+    TODO
   }
 `;
 
@@ -26,4 +36,5 @@ export const typeDefs = [
   userTypes,
   scheduleTypes,
   todoTypes,
+  diaryTypes,
 ];

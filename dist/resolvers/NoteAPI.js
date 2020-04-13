@@ -17,13 +17,13 @@ function createSchedule({ scheduleTime, user, content, }) {
     return __awaiter(this, void 0, void 0, function* () {
         console.log(`${user.email} request Create Schedule`);
         const requestTime = utils_1.getCurrentTime();
-        if (new Promise((resolve) => resolve(!UserAPI_1.CheckExist({ email: user.email })))) {
-            console.log(`not exist user : ${user.email} `);
+        if (yield new Promise((resolve) => resolve(!UserAPI_1.CheckExist({ email: user.email })))) {
+            console.log(`not exist user : ${user.email}`);
             return {
                 isPassed: false,
                 requestTime: requestTime,
                 scheduleTime: null,
-                content: { body: "wrong request, not exist User" },
+                content: { body: "wrong request, not exist User", type: "SCHEDULE" },
                 user: { email: user.email },
             };
         }
@@ -36,7 +36,7 @@ function createSchedule({ scheduleTime, user, content, }) {
                         requestTime,
                         isPassed: false,
                         user: user,
-                        content: { body: "Creating Schedule is failed" },
+                        content: { body: "Creating Schedule is failed", type: "SCHEDULE" },
                         scheduleTime: scheduleTime,
                     });
                 })
@@ -55,7 +55,10 @@ function createSchedule({ scheduleTime, user, content, }) {
                             requestTime,
                             isPassed: false,
                             user: user,
-                            content: { body: "Creating Schedule is failed" },
+                            content: {
+                                body: "Creating Schedule is failed",
+                                type: "SCHEDULE",
+                            },
                             scheduleTime: scheduleTime,
                         });
                     }
@@ -84,17 +87,15 @@ function getAllSchedules({ email, }) {
                     });
                 })
                     .then((data) => {
-                    console.log(data);
                     if (data && util_1.isArray(data)) {
-                        if (ScheduleTypeValidator(data)) {
-                            resolve({
-                                isPassed: false,
-                                message: "Test",
-                                requestTime,
-                                result: ScheduleTypeValidator(data),
-                                user: { email: email },
-                            });
-                        }
+                        console.log(`${email}'s request has been successfully responded.`);
+                        resolve({
+                            isPassed: true,
+                            message: "Test",
+                            requestTime,
+                            result: data,
+                            user: { email: email },
+                        });
                     }
                 });
             });
@@ -111,65 +112,73 @@ function getAllSchedules({ email, }) {
     });
 }
 exports.getAllSchedules = getAllSchedules;
-// type Schedule
-//     const result = new Promise((resolve, rejects) => {
-//       NoteDB.collection(email)
-//         .find()
-//         .toArray()
-//         .catch((error) => {
-//           if (error) {
-//             rejects(error);
-//           }
-//         })
-//         .then((data) => {
-//           resolve(data);
-//         });
-//     });
-//     return await result;
-//   }
-// export class NoteAPI extends DataSource {
-//   async getAllNotes({ email }) {
-//     const result = new Promise((resolve, rejects) => {
-//       NoteDB.collection(email)
-//         .find()
-//         .toArray()
-//         .catch((error) => {
-//           if (error) {
-//             rejects(error);
-//           }
-//         })
-//         .then((data) => {
-//           resolve(data);
-//         });
-//     });
-//     return await result;
-//   }
-//   async createSchedule({ time, user, content }) {
-//     console.log(`Creating Schedule is requested id : ${user.email}`);
-//     const requestTime = getCurrentTime();
-//     const result = new Promise((resolve, rejects) => {
-//       NoteDB.collection(user.email)
-//         .insertOne({ requestTime, time, user, content })
-//         // .catch((error) => {
-//         //   if (error) {
-//         //     rejects(error);
-//         //   }
-//         // })
-//         .then((data) => {
-//           //   console.log(data);
-//           if (!data.result.ok) {
-//             rejects({ isPassed: false });
-//           } else {
-//             resolve({
-//               requestTime: requestTime,
-//               time: time,
-//               isPassed: data.result.ok === 1,
-//               user: { email: user.email },
-//               content: data.ops[0],
-//             });
-//           }
-//         });
-//     });
-//     return await result;
-//   }
-// }
+function createDiary({ user, content, }) {
+    return __awaiter(this, void 0, void 0, function* () {
+        console.log(`${user.email} request Create Diary`);
+        // Make Request Time Object for now
+        const requestTime = utils_1.getCurrentTime();
+        // validate user Information
+        if (yield new Promise((resolve) => resolve(!UserAPI_1.CheckExist({ email: user.email })))) {
+            console.log(`not exist user : ${user.email} `);
+            return {
+                isPassed: false,
+                requestTime: requestTime,
+                scheduleTime: {
+                    date: requestTime.date,
+                    month: requestTime.month,
+                    year: requestTime.month,
+                },
+                content: { body: "wrong request, not exist User", type: "DIARY" },
+                user: { email: user.email },
+            };
+        }
+        else {
+            return new Promise((resolve) => {
+                app_1.NoteDB.collection(user.email)
+                    .insertOne({ requestTime, user, content })
+                    .catch((error) => {
+                    resolve({
+                        requestTime,
+                        scheduleTime: {
+                            date: requestTime.date,
+                            month: requestTime.month,
+                            year: requestTime.month,
+                        },
+                        isPassed: false,
+                        user: user,
+                        content: { body: "Creating Diary is failed", type: "DIARY" },
+                    });
+                })
+                    .then((result) => {
+                    if (result && result.result.ok && result.ops) {
+                        resolve({
+                            requestTime,
+                            scheduleTime: {
+                                date: requestTime.date,
+                                month: requestTime.month,
+                                year: requestTime.month,
+                            },
+                            isPassed: true,
+                            user,
+                            content,
+                        });
+                    }
+                    else {
+                        resolve({
+                            requestTime,
+                            scheduleTime: {
+                                date: requestTime.date,
+                                month: requestTime.month,
+                                year: requestTime.month,
+                            },
+                            isPassed: false,
+                            user: user,
+                            content: { body: "Creating Diary is failed", type: "DIARY" },
+                        });
+                    }
+                });
+            });
+        }
+    });
+}
+exports.createDiary = createDiary;

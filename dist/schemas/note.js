@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const apollo_server_express_1 = require("apollo-server-express");
 exports.scheduleTypes = apollo_server_express_1.gql `
-  # Schedule Type definition
   type Schedule {
     requestTime: RequestTime
     scheduleTime: ScheduleTime
@@ -12,6 +11,7 @@ exports.scheduleTypes = apollo_server_express_1.gql `
 
   type ScheduleContent {
     body: String
+    type: ContentType
   }
 
   input ScheduleTimeInput {
@@ -24,7 +24,6 @@ exports.scheduleTypes = apollo_server_express_1.gql `
     body: String
   }
 
-  # Schedule Request
   type CreateScheduleResult {
     isPassed: Boolean
     requestTime: RequestTime
@@ -52,5 +51,29 @@ exports.todoTypes = apollo_server_express_1.gql `
     body: String
     isImportant: Boolean
     deadline: ScheduleTime
+  }
+`;
+exports.diaryTypes = apollo_server_express_1.gql `
+  type Diary {
+    requestTime: RequestTime
+    user: RequestUser
+    content: DiaryContent
+  }
+
+  type DiaryContent {
+    body: String
+    type: ContentType
+  }
+
+  input DiaryContentInput {
+    body: String
+  }
+
+  type CreateDiaryResult {
+    isPassed: Boolean
+    requestTime: RequestTime
+    scheduleTime: ScheduleTime
+    user: RequestUser
+    content: DiaryContent
   }
 `;

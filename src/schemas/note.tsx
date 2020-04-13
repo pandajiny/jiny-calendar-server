@@ -1,7 +1,6 @@
 import { gql } from "apollo-server-express";
 
 export const scheduleTypes = gql`
-  # Schedule Type definition
   type Schedule {
     requestTime: RequestTime
     scheduleTime: ScheduleTime
@@ -11,6 +10,7 @@ export const scheduleTypes = gql`
 
   type ScheduleContent {
     body: String
+    type: ContentType
   }
 
   input ScheduleTimeInput {
@@ -23,7 +23,6 @@ export const scheduleTypes = gql`
     body: String
   }
 
-  # Schedule Request
   type CreateScheduleResult {
     isPassed: Boolean
     requestTime: RequestTime
@@ -52,5 +51,30 @@ export const todoTypes = gql`
     body: String
     isImportant: Boolean
     deadline: ScheduleTime
+  }
+`;
+
+export const diaryTypes = gql`
+  type Diary {
+    requestTime: RequestTime
+    user: RequestUser
+    content: DiaryContent
+  }
+
+  type DiaryContent {
+    body: String
+    type: ContentType
+  }
+
+  input DiaryContentInput {
+    body: String
+  }
+
+  type CreateDiaryResult {
+    isPassed: Boolean
+    requestTime: RequestTime
+    scheduleTime: ScheduleTime
+    user: RequestUser
+    content: DiaryContent
   }
 `;

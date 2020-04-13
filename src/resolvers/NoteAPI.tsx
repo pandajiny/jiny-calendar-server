@@ -9,6 +9,8 @@ import { resolve } from "dns";
 import { isArray, isBoolean, isString } from "util";
 import { scheduleTypes } from "../schemas/note";
 
+type ContentType = "SCHEDULE" | "DIARY" | "SCHEDULE";
+
 type RequestTime = {
   year: number;
   month: number;
@@ -30,6 +32,7 @@ type RequestUser = {
 
 type ScheduleContent = {
   body: String;
+  type: ContentType;
 };
 
 type CreateScheduleProps = {
@@ -53,13 +56,15 @@ export async function createSchedule({
 }: CreateScheduleProps): Promise<CreateScheduleResult> {
   console.log(`${user.email} request Create Schedule`);
   const requestTime = getCurrentTime();
-  if (new Promise((resolve) => resolve(!CheckExist({ email: user.email })))) {
-    console.log(`not exist user : ${user.email} `);
+  if (
+    await new Promise((resolve) => resolve(!CheckExist({ email: user.email })))
+  ) {
+    console.log(`not exist user : ${user.email}`);
     return {
       isPassed: false,
       requestTime: requestTime,
       scheduleTime: null,
-      content: { body: "wrong request, not exist User" },
+      content: { body: "wrong request, not exist User", type: "SCHEDULE" },
       user: { email: user.email },
     };
   } else {
@@ -71,7 +76,7 @@ export async function createSchedule({
             requestTime,
             isPassed: false,
             user: user,
-            content: { body: "Creating Schedule is failed" },
+            content: { body: "Creating Schedule is failed", type: "SCHEDULE" },
             scheduleTime: scheduleTime,
           });
         })
@@ -89,7 +94,10 @@ export async function createSchedule({
               requestTime,
               isPassed: false,
               user: user,
-              content: { body: "Creating Schedule is failed" },
+              content: {
+                body: "Creating Schedule is failed",
+                type: "SCHEDULE",
+              },
               scheduleTime: scheduleTime,
             });
           }
@@ -139,17 +147,15 @@ export async function getAllSchedules({
           });
         })
         .then((data) => {
-          console.log(data);
           if (data && isArray(data)) {
-            if (ScheduleTypeValidator(data)) {
-              resolve({
-                isPassed: false,
-                message: "Test",
-                requestTime,
-                result: ScheduleTypeValidator(data),
-                user: { email: email },
-              });
-            }
+            console.log(`${email}'s request has been successfully responded.`);
+            resolve({
+              isPassed: true,
+              message: "Test",
+              requestTime,
+              result: data,
+              user: { email: email },
+            });
           }
         });
     });
@@ -164,69 +170,93 @@ export async function getAllSchedules({
   }
 }
 
-// type Schedule
+type CreateDiaryProps = {
+  user: RequestUser;
+  content: DiaryContent;
+};
 
-//     const result = new Promise((resolve, rejects) => {
-//       NoteDB.collection(email)
-//         .find()
-//         .toArray()
-//         .catch((error) => {
-//           if (error) {
-//             rejects(error);
-//           }
-//         })
-//         .then((data) => {
-//           resolve(data);
-//         });
-//     });
-//     return await result;
-//   }
+type DiaryContent = {
+  body: string;
+  type: ContentType;
+};
 
-// export class NoteAPI extends DataSource {
-//   async getAllNotes({ email }) {
-//     const result = new Promise((resolve, rejects) => {
-//       NoteDB.collection(email)
-//         .find()
-//         .toArray()
-//         .catch((error) => {
-//           if (error) {
-//             rejects(error);
-//           }
-//         })
-//         .then((data) => {
-//           resolve(data);
-//         });
-//     });
-//     return await result;
-//   }
+type CreateDiaryResult = {
+  isPassed: boolean;
+  requestTime: RequestTime;
+  scheduleTime: ScheduleTime;
+  user: RequestUser;
+  content: DiaryContent;
+};
 
-//   async createSchedule({ time, user, content }) {
-//     console.log(`Creating Schedule is requested id : ${user.email}`);
-//     const requestTime = getCurrentTime();
-//     const result = new Promise((resolve, rejects) => {
-//       NoteDB.collection(user.email)
-//         .insertOne({ requestTime, time, user, content })
-//         // .catch((error) => {
-//         //   if (error) {
-//         //     rejects(error);
-//         //   }
-//         // })
-//         .then((data) => {
-//           //   console.log(data);
-//           if (!data.result.ok) {
-//             rejects({ isPassed: false });
-//           } else {
-//             resolve({
-//               requestTime: requestTime,
-//               time: time,
-//               isPassed: data.result.ok === 1,
-//               user: { email: user.email },
-//               content: data.ops[0],
-//             });
-//           }
-//         });
-//     });
+export async function createDiary({
+  user,
+  content,
+}: CreateDiaryProps): Promise<CreateDiaryResult> {
+  console.log(`${user.email} request Create Diary`);
+  // Make Request Time Object for now
+  const requestTime = getCurrentTime();
 
-//     return await result;
-//   }
-// }
+  // validate user Information
+  if (
+    await new Promise((resolve) => resolve(!CheckExist({ email: user.email })))
+  ) {
+    console.log(`not exist user : ${user.email} `);
+    return {
+      isPassed: false,
+      requestTime: requestTime,
+      scheduleTime: {
+        date: requestTime.date,
+        month: requestTime.month,
+        year: requestTime.month,
+      },
+      content: { body: "wrong request, not exist User", type: "DIARY" },
+      user: { email: user.email },
+    };
+  } else {
+    return new Promise((resolve) => {
+      NoteDB.collection(user.email)
+        .insertOne({ requestTime, user, content })
+        .catch((error) => {
+          resolve({
+            requestTime,
+
+            scheduleTime: {
+              date: requestTime.date,
+              month: requestTime.month,
+              year: requestTime.month,
+            },
+            isPassed: false,
+            user: user,
+            content: { body: "Creating Diary is failed", type: "DIARY" },
+          });
+        })
+        .then((result) => {
+          if (result && result.result.ok && result.ops) {
+            resolve({
+              requestTime,
+              scheduleTime: {
+                date: requestTime.date,
+                month: requestTime.month,
+                year: requestTime.month,
+              },
+              isPassed: true,
+              user,
+              content,
+            });
+          } else {
+            resolve({
+              requestTime,
+              scheduleTime: {
+                date: requestTime.date,
+                month: requestTime.month,
+                year: requestTime.month,
+              },
+              isPassed: false,
+              user: user,
+              content: { body: "Creating Diary is failed", type: "DIARY" },
+            });
+          }
+        });
+    });
+  }
+}

@@ -14,13 +14,8 @@ export async function CheckExist({ email }: CheckExistProps): Promise<Boolean> {
       .toArray()
       .then((data) => {
         if (data.length > 0) {
-          if (NoteDB.collection(email)) {
-            console.log(`${email} is Exist`);
-            resolve(true);
-          } else {
-            console.log(`${email} is exist, but Personal Note storage is not`);
-            resolve(false);
-          }
+          console.log(`${email} is Exist`);
+          resolve(true);
         } else {
           console.log(`${email} is not exist`);
           resolve(false);

@@ -16,8 +16,20 @@ export const resolvers = {
       return await UserAPI.RequestSignup({ name, email, password });
     },
     createSchedule: async (_, { scheduleTime, content, user }, ___) => {
-      return await NoteAPI.createSchedule({ scheduleTime, user, content });
-      // return await dataSources.NoteAPI.createSchedule({ time, user, content });
+      return await NoteAPI.createSchedule({
+        scheduleTime,
+        user,
+        content: { body: content.body, type: "SCHEDULE" },
+      });
+    },
+    createDiary: async (_, { user, content }, ___) => {
+      return await NoteAPI.createDiary({
+        user,
+        content: {
+          body: content.body,
+          type: "DIARY",
+        },
+      });
     },
   },
 };
