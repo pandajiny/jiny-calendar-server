@@ -10,10 +10,6 @@ import { NoteAPI } from "./datasourses/note";
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  dataSources: () => ({
-    UserAPI: new UserAPI(),
-    NoteAPI: new NoteAPI(),
-  }),
 });
 
 server.applyMiddleware({ app });

@@ -8,73 +8,33 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const app_1 = require("../app");
+const UserAPI = __importStar(require("./UserAPI"));
+const NoteAPI = __importStar(require("./NoteAPI"));
 exports.resolvers = {
     Query: {
-        hello: (_, {}, { dataSources }) => __awaiter(void 0, void 0, void 0, function* () {
-            console.log("hello");
-            const request = yield dataSources.UserAPI.hello("test");
-            return request;
-        }),
         getAllSchedules: (_, { email }, { dataSources }) => __awaiter(void 0, void 0, void 0, function* () {
-            return yield dataSources.NoteAPI.getAllNotes({ email });
+            return yield NoteAPI.getAllSchedules({ email });
         }),
     },
     Mutation: {
-        requestLogin: (_, { email, password }, { dataSources }) => __awaiter(void 0, void 0, void 0, function* () {
-            const isDuplicated = yield dataSources.UserAPI.CheckDuplication(email);
-            console.log(`login requested : `);
-            const user = yield app_1.UserDB.collection(email)
-                .findOne({ email: email, password: password })
-                .then((result) => result);
-            console.log(user);
-            return { user: user };
+        requestLogin: (_, { email, password }, ___) => __awaiter(void 0, void 0, void 0, function* () {
+            return yield UserAPI.RequestLogin({ email, password });
+            // return await dataSources.UserAPI.RequestLogin({ email, password });
         }),
-        requestSignup: (_, { name, email, password }, { dataSources }) => __awaiter(void 0, void 0, void 0, function* () {
-            return yield dataSources.UserAPI.RequestSignup(name, email, password);
+        requestSignup: (_, { name, email, password }, ___) => __awaiter(void 0, void 0, void 0, function* () {
+            return yield UserAPI.RequestSignup({ name, email, password });
         }),
-        createSchedule: (_, { time, content, user }, { dataSources }) => __awaiter(void 0, void 0, void 0, function* () {
-            return yield dataSources.NoteAPI.createSchedule({ time, user, content });
+        createSchedule: (_, { scheduleTime, content, user }, ___) => __awaiter(void 0, void 0, void 0, function* () {
+            return yield NoteAPI.createSchedule({ scheduleTime, user, content });
+            // return await dataSources.NoteAPI.createSchedule({ time, user, content });
         }),
     },
 };
-// export type User = {
-//     name: string;
-//     email: string;
-//     password: string;
-//     isLoggedIn: LoginState;
-//   };
-//   export type LoginState = "TRUE" | "FALSE" | undefined;
-//   // Schedule Context
-//   export type Schedule = {
-//     _id?: string;
-//     requestTime: Time;
-//     time: Time;
-//     content: Content;
-//     user: requestUser;
-//   };
-//   type requestUser = {
-//     email: string;
-//     name: string;
-//   };
-//   type Content = {
-//     text: string;
-//     isImportant: boolean;
-//     kind: ContentType;
-//   };
-//   type ContentType = "Schedule" | "undefined";
-//   export type Time = {
-//     year: number;
-//     month: number;
-//     date: number;
-//     hour: number;
-//     minute: number;
-//     second: number;
-//   };
-//   export type SaveCookieProps = {
-//     name: string;
-//     email: string;
-//     isLoggedIn: "TRUE" | "FALSE";
-//     loginTime: Time;
-//   };
