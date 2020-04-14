@@ -7,6 +7,10 @@ const time_1 = require("./time");
 const schema = apollo_server_express_1.gql `
   type Query {
     getAllSchedules(email: String): GetSchedulesResult
+    getDailyNotes(
+      user: RequestUserInput
+      scheduleTime: ScheduleTimeInput
+    ): GetDailyNotesResult
   }
 
   type Mutation {
@@ -21,6 +25,11 @@ const schema = apollo_server_express_1.gql `
       user: RequestUserInput
       content: DiaryContentInput
     ): CreateDiaryResult
+    createTodo(
+      scheduleTime: ScheduleTimeInput
+      user: RequestUserInput
+      content: TodoContentInput
+    ): CreateTodoResult
   }
 
   enum ContentType {
@@ -36,4 +45,5 @@ exports.typeDefs = [
     note_1.scheduleTypes,
     note_1.todoTypes,
     note_1.diaryTypes,
+    note_1.noteResultTypes,
 ];

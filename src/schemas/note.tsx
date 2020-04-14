@@ -1,5 +1,40 @@
 import { gql } from "apollo-server-express";
 
+export const noteResultTypes = gql`
+  type GetDailyNotesResult {
+    isPassed: Boolean
+    requestTime: RequestTime
+    user: RequestUser
+    diary: [Diary]
+
+    message: String
+  }
+
+  type GetSchedulesResult {
+    isPassed: Boolean
+    requestTime: RequestTime
+    user: RequestUser
+    result: [Schedule]
+    message: String
+  }
+
+  type CreateScheduleResult {
+    isPassed: Boolean
+    requestTime: RequestTime
+    scheduleTime: ScheduleTime
+    user: RequestUser
+    content: ScheduleContent
+  }
+
+  type CreateDiaryResult {
+    isPassed: Boolean
+    requestTime: RequestTime
+    scheduleTime: ScheduleTime
+    user: RequestUser
+    content: DiaryContent
+  }
+`;
+
 export const scheduleTypes = gql`
   type Schedule {
     requestTime: RequestTime
@@ -22,22 +57,6 @@ export const scheduleTypes = gql`
   input ScheduleContentInput {
     body: String
   }
-
-  type CreateScheduleResult {
-    isPassed: Boolean
-    requestTime: RequestTime
-    scheduleTime: ScheduleTime
-    user: RequestUser
-    content: ScheduleContent
-  }
-
-  type GetSchedulesResult {
-    isPassed: Boolean
-    requestTime: RequestTime
-    user: RequestUser
-    result: [Schedule]
-    message: String
-  }
 `;
 
 export const todoTypes = gql`
@@ -49,8 +68,31 @@ export const todoTypes = gql`
 
   type TodoContent {
     body: String
+    option: TodoOption
+  }
+
+  input TodoContentInput {
+    option: TodoOptionInput
+    body: String
+  }
+
+  input TodoOptionInput {
     isImportant: Boolean
+    deadline: ScheduleContentInput
+    scheduleTime: ScheduleTimeInput
+  }
+
+  type TodoOption {
+    isImportant: Boolean
+    scheduleTime: ScheduleTime
     deadline: ScheduleTime
+  }
+
+  type CreateTodoResult {
+    isPassed: Boolean
+    requestTime: RequestTime
+    user: RequestUser
+    content: TodoContent
   }
 `;
 
@@ -68,13 +110,5 @@ export const diaryTypes = gql`
 
   input DiaryContentInput {
     body: String
-  }
-
-  type CreateDiaryResult {
-    isPassed: Boolean
-    requestTime: RequestTime
-    scheduleTime: ScheduleTime
-    user: RequestUser
-    content: DiaryContent
   }
 `;

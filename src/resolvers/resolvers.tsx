@@ -1,6 +1,8 @@
 import * as UserAPI from "./UserAPI";
 import * as NoteAPI from "./NoteAPI";
 
+import { GraphQLScalarType } from "graphql";
+
 export const resolvers = {
   Query: {
     getAllSchedules: async (_, { email }, { dataSources }) => {
@@ -22,7 +24,7 @@ export const resolvers = {
         content: { body: content.body, type: "SCHEDULE" },
       });
     },
-    createDiary: async (_, { user, content }, ___) => {
+    createDiary: async (_, { user, content, scheduleTime }, ___) => {
       return await NoteAPI.createDiary({
         user,
         content: {
@@ -30,6 +32,9 @@ export const resolvers = {
           type: "DIARY",
         },
       });
+    },
+    createTodo: async (_, { user, content }, ___) => {
+      return await NoteAPI.createTodo({ user, content });
     },
   },
 };

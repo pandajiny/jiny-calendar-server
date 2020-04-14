@@ -260,3 +260,89 @@ export async function createDiary({
     });
   }
 }
+
+type CreateTodoProps = {
+  user: RequestUser;
+  content: TodoContent;
+};
+
+type TodoContent = {
+  body: string;
+  option: {
+    isImportant: boolean;
+    scheduleTime: ScheduleTime;
+    deadline: ScheduleTime | null;
+  };
+};
+
+type CreateTodoResult = {
+  isPassed: Boolean;
+  requestTime: RequestTime;
+  user: RequestUser;
+  content: TodoContent;
+};
+
+export async function createTodo({
+  user,
+  content,
+}: CreateTodoProps): Promise<CreateTodoResult> {
+  const requestTime = getCurrentTime();
+  console.log(`${user.email} request Create Todo`);
+  if (
+    await new Promise((resolve) => resolve(!CheckExist({ email: user.email })))
+  ) {
+    console.log(`${user.email} not exist user.`);
+    return {
+      isPassed: false,
+      content: {
+        body: "Error occured",
+        option: {
+          deadline: null,
+          isImportant: false,
+          scheduleTime: null,
+        },
+      },
+      requestTime: requestTime,
+      user: user,
+    };
+  } else {
+    return await new Promise((resolve) => {
+      NoteDB.collection(user.email)
+        .insertOne({
+          requestTime,
+          user,
+          content,
+        })
+        .catch((error) => {
+          console.log(`error occured`);
+          resolve({
+            isPassed: false,
+            requestTime: requestTime,
+            user: user,
+            content: {
+              body: "failed",
+              option: {
+                isImportant: false,
+                deadline: null,
+                scheduleTime: null,
+              },
+            },
+          });
+        })
+        .then((result) => {
+          // console.log(result.ops[0].content.option)
+          resolve({
+            isPassed: true,
+            requestTime: requestTime,
+            user: user,
+            content:
+              result &&
+              isArray(result.ops) &&
+              (result.ops[0].content as TodoContent),
+          });
+        });
+    });
+  }
+}
+
+// export async function getDailyNote({});

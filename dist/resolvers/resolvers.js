@@ -39,7 +39,7 @@ exports.resolvers = {
                 content: { body: content.body, type: "SCHEDULE" },
             });
         }),
-        createDiary: (_, { user, content }, ___) => __awaiter(void 0, void 0, void 0, function* () {
+        createDiary: (_, { user, content, scheduleTime }, ___) => __awaiter(void 0, void 0, void 0, function* () {
             return yield NoteAPI.createDiary({
                 user,
                 content: {
@@ -47,6 +47,9 @@ exports.resolvers = {
                     type: "DIARY",
                 },
             });
+        }),
+        createTodo: (_, { user, content }, ___) => __awaiter(void 0, void 0, void 0, function* () {
+            return yield NoteAPI.createTodo({ user, content });
         }),
     },
 };

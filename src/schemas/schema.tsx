@@ -1,12 +1,16 @@
 import { gql } from "apollo-server-express";
 
 import { userTypes } from "./user";
-import { scheduleTypes, todoTypes, diaryTypes } from "./note";
+import { scheduleTypes, todoTypes, diaryTypes, noteResultTypes } from "./note";
 import { timeTypes } from "./time";
 
 const schema = gql`
   type Query {
     getAllSchedules(email: String): GetSchedulesResult
+    getDailyNotes(
+      user: RequestUserInput
+      scheduleTime: ScheduleTimeInput
+    ): GetDailyNotesResult
   }
 
   type Mutation {
@@ -21,6 +25,11 @@ const schema = gql`
       user: RequestUserInput
       content: DiaryContentInput
     ): CreateDiaryResult
+    createTodo(
+      scheduleTime: ScheduleTimeInput
+      user: RequestUserInput
+      content: TodoContentInput
+    ): CreateTodoResult
   }
 
   enum ContentType {
@@ -37,4 +46,5 @@ export const typeDefs = [
   scheduleTypes,
   todoTypes,
   diaryTypes,
+  noteResultTypes,
 ];

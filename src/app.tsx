@@ -17,10 +17,6 @@ const client = new MongoClient("mongodb://localhost:27017/jiny-calendar", {
   useUnifiedTopology: true,
 });
 
-console.log("test");
-
-console.log("ho");
-
 client.connect((err) => {
   if (err) throw err;
   console.log(

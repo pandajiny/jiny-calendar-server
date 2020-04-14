@@ -182,3 +182,64 @@ function createDiary({ user, content, }) {
     });
 }
 exports.createDiary = createDiary;
+function createTodo({ user, content, }) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const requestTime = utils_1.getCurrentTime();
+        console.log(`${user.email} request Create Todo`);
+        if (yield new Promise((resolve) => resolve(!UserAPI_1.CheckExist({ email: user.email })))) {
+            console.log(`${user.email} not exist user.`);
+            return {
+                isPassed: false,
+                content: {
+                    body: "Error occured",
+                    option: {
+                        deadline: null,
+                        isImportant: false,
+                        scheduleTime: null,
+                    },
+                },
+                requestTime: requestTime,
+                user: user,
+            };
+        }
+        else {
+            return yield new Promise((resolve) => {
+                app_1.NoteDB.collection(user.email)
+                    .insertOne({
+                    requestTime,
+                    user,
+                    content,
+                })
+                    .catch((error) => {
+                    console.log(`error occured`);
+                    resolve({
+                        isPassed: false,
+                        requestTime: requestTime,
+                        user: user,
+                        content: {
+                            body: "failed",
+                            option: {
+                                isImportant: false,
+                                deadline: null,
+                                scheduleTime: null,
+                            },
+                        },
+                    });
+                })
+                    .then((result) => {
+                    // console.log(result.ops[0].content.option)
+                    resolve({
+                        isPassed: true,
+                        requestTime: requestTime,
+                        user: user,
+                        content: result &&
+                            util_1.isArray(result.ops) &&
+                            result.ops[0].content,
+                    });
+                });
+            });
+        }
+    });
+}
+exports.createTodo = createTodo;
+// export async function getDailyNote({});
